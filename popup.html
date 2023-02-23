@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <script src="popup.js"></script>
+        <style>
+            html{
+                padding: 0;
+            }
+            body {
+                width: 450px;
+                height: fit-content;
+                border: 2px solid white;
+                background-color: hsl(220, 10%, 20%);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                row-gap: 0.5em;
+                color: white;
+                padding: 0.5em;
+            }
+            button{
+                background-color: hsl(220, 10%, 30%);
+                border: 2px solid white;
+                color: white;
+                padding: 0.5em;
+                border-radius: 0.5em;
+                cursor: pointer;
+                font-size: 1.25em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 style="margin-bottom: 0;">Max Autolytics Provisioner</h1>
+        <div style="padding: 0.5rem; background-color: hsl(220, 10%, 30%); border-radius: 0.5rem; width: 95%; text-align: center;">
+            <h2 style="margin-bottom: 0;" id="status_title">Stored Vehicle:</h2>
+            <h3 id="status">None</h3>
+        </div>
+        <button class="button" id="get_btn" style="width: 100%;">
+            Grab Vehicle Details
+        </button>
+        <button class="button" id="set_btn" style="width: 100%;">
+            Put Vehicle Details
+        </button>
+    </body>
+</html>
