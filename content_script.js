@@ -36,6 +36,22 @@ if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll(
     }
 
     document.getElementsByTagName('head')[0].appendChild(style);
+
+    let tableEl = document.querySelectorAll('.x-grid3')
+    if(tableEl.length) {
+        tableEl = tableEl[0]
+        let titleEl = document.createElement('div')
+        titleEl.innerText = 'Max Autolytics : Select a Vehicle'
+        titleEl.style.fontSize = '1.25em'
+        titleEl.style.color = 'white'
+        titleEl.style.fontWeight = '600'
+        titleEl.style.backgroundColor = 'hsl(220, 100%, 60%)'
+        titleEl.style.padding = '1em'
+        titleEl.style.marginBottom = '5px'
+        titleEl.style.textAlign = 'center'
+        titleEl.id = 'new-borderEl-select-framework-title'
+        tableEl.insertBefore(titleEl, tableEl.firstChild)
+    }
     
     
     document.querySelectorAll('.x-grid3-row-table').forEach((element, index) => {
@@ -50,6 +66,7 @@ if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll(
             e.target.style.cursor = 'default'
             e.target.style.pointerEvents = 'none'
             e.target.style.opacity = '0.7'
+            document.getElementById('new-borderEl-select-framework-title').innerText = 'Max Autolytics : Loading...'
             const data = e.target.parentElement;
             
             // this is the elements INSIDE the <tr> element
@@ -72,101 +89,122 @@ if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll(
                         console.log(Array.from(subChildren))
                         Array.from(subChildren).forEach(subChild => {
                             if(subChild.children.length > 1){
-                                let label = subChild.children[0]?.innerText
-                                let value = subChild.children[1]?.innerText
-                                if(label === 'VIN:'){
-                                    fetch('https://www2.vauto.com/Va/Inventory/InventoryData.ashx?QuickSearch=' + value + "&gridSrcName=inventoryDetail&IsExactWordMatch=false&HistoricalDaySpan=7", {
-                                        "headers": {
-                                            "accept": "application/json, text/javascript, */*; q=0.01",
-                                            "accept-language": "en-US,en;q=0.9",
-                                            "content-type": "application/json; charset=UTF-8",
-                                            "sec-fetch-dest": "empty",
-                                            "sec-fetch-mode": "cors",
-                                            "sec-fetch-site": "same-origin"
-                                        },
-                                        "referrer": "https://www2.vauto.com/Va/Inventory/Inventory.aspx",
-                                        "referrerPolicy": "strict-origin-when-cross-origin",
-                                        ":path": "/Va/Inventory/InventoryData.ashx",
-                                        ":scheme": "https",
-                                        ":authority": "www2.vauto.com",
-                                        "method": "POST",
-                                    }).then(e => e.text()).then(e => {
-                                        let obj = e.replace(/\\n/g, '')
-                                        obj = obj.replace(/new Date\((\d+)\)/g, '$1')
-                                        obj = JSON.parse(obj)
-                                        let returnObj = {}
-                                        console.log(obj.rows)
-                                        obj.columns.forEach((column, index) => {
-                                            returnObj[column] = obj.rows[0][index]
-                                        })
-                                        return returnObj
-                                    }).then(e => {
-                                        let notes = e['AppraisalCommmentRec'] ? JSON.parse(e['AppraisalCommmentRec'])[0]?.comment : undefined
-                                        let v_initial_carg_h = ''
-                                        let v_initial_carg_level = ''
-                                        let v_initial_mmr = ''
-                                        let v_msrp = ''
-                                        let splitNotes = notes?.split(' ')?.map(e => e)
-                                        if(splitNotes){
-                                            splitNotes.forEach((note, index) => {
-                                                if(note.toUpperCase() === 'MSRP'){
-                                                    v_msrp = splitNotes[index + 1]
+                                try{
+                                    let label = subChild.children[0]?.innerText
+                                    let value = subChild.children[1]?.innerText
+                                    if(label === 'VIN:'){
+                                        fetch('https://www2.vauto.com/Va/Inventory/InventoryData.ashx?QuickSearch=' + value + "&gridSrcName=inventoryDetail&IsExactWordMatch=false&HistoricalDaySpan=7", {
+                                            "headers": {
+                                                "accept": "application/json, text/javascript, */*; q=0.01",
+                                                "accept-language": "en-US,en;q=0.9",
+                                                "content-type": "application/json; charset=UTF-8",
+                                                "sec-fetch-dest": "empty",
+                                                "sec-fetch-mode": "cors",
+                                                "sec-fetch-site": "same-origin"
+                                            },
+                                            "referrer": "https://www2.vauto.com/Va/Inventory/Inventory.aspx",
+                                            "referrerPolicy": "strict-origin-when-cross-origin",
+                                            ":path": "/Va/Inventory/InventoryData.ashx",
+                                            ":scheme": "https",
+                                            ":authority": "www2.vauto.com",
+                                            "method": "POST",
+                                        }).then(e => e.text()).then(e => {
+                                            let obj = e.replace(/\\n/g, '')
+                                            obj = obj.replace(/new Date\((\d+)\)/g, '$1')
+                                            obj = JSON.parse(obj)
+                                            if(obj.rows.length === 0){
+                                                console.log(e)
+                                                if(document.querySelectorAll('#new-borderEl-select-framework') && document.querySelectorAll('#new-borderEl-select-framework').length > 0){
+                                                    document.querySelectorAll('#new-borderEl-select-framework').forEach((element) => {
+                                                        element.remove();
+                                                    });
                                                 }
-                                                if(note.toUpperCase() === 'MMR'){
-                                                    v_initial_mmr = splitNotes[index + 1]
-                                                }
-                                                if(note.toUpperCase() === 'GR'){
-                                                    v_initial_carg_h = splitNotes[index + 1]
-                                                    v_initial_carg_level = 'greatPrice'
-                                                }
-                                                if(note.toUpperCase() === 'G'){
-                                                    v_initial_carg_h = splitNotes[index + 1]
-                                                    v_initial_carg_level = 'goodPrice'
-                                                }
-                                                if(note.toUpperCase() === 'F'){
-                                                    v_initial_carg_h = splitNotes[index + 1]
-                                                    v_initial_carg_level = 'fairPrice'
-                                                }
-                                                if(note.toUpperCase() === 'IMV'){
-                                                    v_initial_carg_h = splitNotes[index + 1]
-                                                    v_initial_carg_level = 'fairPrice'
-                                                }
-                                                if(note.toUpperCase() === 'H'){
-                                                    v_initial_carg_h = splitNotes[index + 1]
-                                                    v_initial_carg_level = 'highPrice'
-                                                }
-                                                if(note.toUpperCase() === 'OP'){
-                                                    v_initial_carg_h = splitNotes[index + 1]
-                                                    v_initial_carg_level = 'overPrice'
-                                                }
-        
+                                                document.getElementById('new-borderEl-select-framework-title').innerText = 'Max Autolytics : There was an error. Do you have the "Left Inventory" filter selected?'
+                                                document.getElementById('new-borderEl-select-framework-title').style.backgroundColor = 'hsl(0, 100%, 60%)'
+                                            }
+                                            let returnObj = {}
+                                            console.log(obj.rows)
+                                            obj.columns.forEach((column, index) => {
+                                                returnObj[column] = obj.rows[0][index]
                                             })
-                                        }
-                                        let details = {
-                                            v_stock_no: e['StockNumber'],
-                                            v_miles: e['Odometer'],
-                                            v_vehicle: e['VehicleTitle']?.toUpperCase(),
-                                            v_vin_no: e['Vin'],
-                                            v_source: e['VehicleSource'],
-                                            v_zip: e['AppraisedPostalCode'],
-                                            v_is_certified: e['IsCertified'] === 1 ? true : false,
-                                            v_notes: notes,
-                                            v_days: e['DaysInInventory'],
-                                            v_final_acv: e['AppraisedValue'],
-                                            v_acv: e['TotalCost'],
-                                            v_final_mmr: e['Manheim_Wholesale'],
-                                            v_start_price: e['ListPrice'],
-                                            v_sell_price: e['SourceListPrice'],
-                                            v_market_percent: e['EffectivePercentOfMarket'] ? Math.round(e['EffectivePercentOfMarket'] * 100) : undefined,
-                                            created_at: e['DeletedDate'] ? new Date(e['DeletedDate']).toLocaleDateString('en-US') : new Date(),
-                                            v_initial_carg_h,
-                                            v_initial_carg_level,
-                                            v_initial_mmr,
-                                            v_msrp
-                                        }   
-                                        console.log(details)
-                                        chrome.runtime.sendMessage({ type: 'gathered-metrics-data', data: details})
-                                    })
+                                            return returnObj
+                                        }).then(e => {
+                                            document.getElementById('new-borderEl-select-framework-title').innerText = 'Max Autolytics : ' + e['VehicleTitle']
+                                            let notes = e['AppraisalCommmentRec'] ? JSON.parse(e['AppraisalCommmentRec'])[0]?.comment : undefined
+                                            let v_initial_carg_h = ''
+                                            let v_initial_carg_level = ''
+                                            let v_initial_mmr = ''
+                                            let v_msrp = ''
+                                            let splitNotes = notes?.split(' ')?.map(e => e)
+                                            if(splitNotes){
+                                                splitNotes.forEach((note, index) => {
+                                                    if(note.toUpperCase() === 'MSRP'){
+                                                        v_msrp = splitNotes[index + 1]
+                                                    }
+                                                    if(note.toUpperCase() === 'MMR'){
+                                                        v_initial_mmr = splitNotes[index + 1]
+                                                    }
+                                                    if(note.toUpperCase() === 'GR'){
+                                                        v_initial_carg_h = splitNotes[index + 1]
+                                                        v_initial_carg_level = 'greatPrice'
+                                                    }
+                                                    if(note.toUpperCase() === 'G'){
+                                                        v_initial_carg_h = splitNotes[index + 1]
+                                                        v_initial_carg_level = 'goodPrice'
+                                                    }
+                                                    if(note.toUpperCase() === 'F'){
+                                                        v_initial_carg_h = splitNotes[index + 1]
+                                                        v_initial_carg_level = 'fairPrice'
+                                                    }
+                                                    if(note.toUpperCase() === 'IMV'){
+                                                        v_initial_carg_h = splitNotes[index + 1]
+                                                        v_initial_carg_level = 'fairPrice'
+                                                    }
+                                                    if(note.toUpperCase() === 'H'){
+                                                        v_initial_carg_h = splitNotes[index + 1]
+                                                        v_initial_carg_level = 'highPrice'
+                                                    }
+                                                    if(note.toUpperCase() === 'OP'){
+                                                        v_initial_carg_h = splitNotes[index + 1]
+                                                        v_initial_carg_level = 'overPrice'
+                                                    }
+            
+                                                })
+                                            }
+                                            let details = {
+                                                v_stock_no: e['StockNumber'],
+                                                v_miles: e['Odometer'],
+                                                v_vehicle: e['VehicleTitle']?.toUpperCase(),
+                                                v_vin_no: e['Vin'],
+                                                v_source: e['VehicleSource'],
+                                                v_zip: e['AppraisedPostalCode'],
+                                                v_is_certified: e['IsCertified'] === 1 ? true : false,
+                                                v_notes: notes,
+                                                v_days: e['DaysInInventory'],
+                                                v_final_acv: e['TotalCost'],
+                                                v_acv: e['AppraisedValue'],
+                                                v_final_mmr: e['Manheim_Wholesale'],
+                                                v_start_price: e['ListPrice'],
+                                                v_sell_price: e['SourceListPrice'],
+                                                v_market_percent: e['EffectivePercentOfMarket'] ? Math.round(e['EffectivePercentOfMarket'] * 100) : undefined,
+                                                created_at: e['DeletedDate'] ? new Date(e['DeletedDate']).toLocaleDateString('en-US') : new Date(),
+                                                v_initial_carg_h,
+                                                v_initial_carg_level,
+                                                v_initial_mmr,
+                                                v_msrp
+                                            }   
+                                            console.log(details)
+                                            chrome.runtime.sendMessage({ type: 'gathered-metrics-data', data: details})
+                                        })
+                                    }
+                                } catch(e) {
+                                    console.log(e)
+                                    if(document.querySelectorAll('#new-borderEl-select-framework') && document.querySelectorAll('#new-borderEl-select-framework').length > 0){
+                                        document.querySelectorAll('#new-borderEl-select-framework').forEach((element) => {
+                                            element.remove();
+                                        });
+                                    }
+                                    document.getElementById('new-borderEl-select-framework-title').innerText = 'Max Autolytics : There was an error. Do you have the "Left Inventory" filter selected?'
                                 }
                             }
                         })
