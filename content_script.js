@@ -187,7 +187,6 @@ if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll(
                                                 v_start_price: e['ListPrice'],
                                                 v_sell_price: e['SourceListPrice'],
                                                 v_market_percent: e['EffectivePercentOfMarket'] ? Math.round(e['EffectivePercentOfMarket'] * 100) : undefined,
-                                                created_at: e['DeletedDate'] ? new Date(e['DeletedDate']).toLocaleDateString('en-US') : new Date(),
                                                 v_initial_carg_h,
                                                 v_initial_carg_level,
                                                 v_initial_mmr,
