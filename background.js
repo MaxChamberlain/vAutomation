@@ -14,6 +14,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
             });
         }
         if(request.type === 'gathered-metrics-data') {
+            chrome.storage.local.set({wasWritten: true}, function() {
+            });
             chrome.scripting.executeScript({
                 target: {tabId: currentTab},
                 files: ['undo_content_script.js']

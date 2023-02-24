@@ -5,9 +5,18 @@ if(document.querySelectorAll('#new-borderEl-select-framework') && document.query
 }
 if(document.querySelectorAll('#new-borderEl-select-framework-title') && document.querySelectorAll('#new-borderEl-select-framework-title').length > 0){
     document.querySelectorAll('#new-borderEl-select-framework-title').forEach((element) => {
-        element.innerText = 'Max Autolytics : Got Vehicle Data. You can now put in Max Autolytics'
-        element.style.backgroundColor = 'hsla(103, 100%, 56%, 1)'
-        element.style.color = 'black'
-        setTimeout(() => element.remove(), 8000)
+        chrome.storage.local.get('wasWritten', function (result) {
+            if (result && result.wasWritten === true) {
+                chrome.storage.local.get('metrics', function (result2) {
+                    element.innerText = 'Max Autolytics : got "' + result2.metrics?.v_vehicle + ' (' + result2.metrics?.v_stock_no + ')"'
+                    element.style.backgroundColor = 'hsla(103, 100%, 56%, 1)'
+                    element.style.color = 'black'
+                    setTimeout(() => element.remove(), 5000)
+                })
+            } else {
+                element.remove()
+            }
+            chrome.storage.local.remove('wasWritten')
+        })
     });
 }

@@ -1,5 +1,8 @@
 // chrome.runtime.sendMessage({type: 'gathered-metrics-data', data: "test"})
 
+if (document.getElementById('new-borderEl-select-framework-title')) {
+    document.getElementById('new-borderEl-select-framework-title').remove();
+}
 if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll('.x-grid3-row-table').length > 0){
     var css = `
         #new-borderEl-select-framework{
@@ -83,10 +86,8 @@ if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll(
             Array.from(children).filter(e => e?.className.includes('ColumnField')).forEach((child, index) => {
                 let newChildren = Array.from(child?.children)
                 if(newChildren.length) {
-                    console.log(newChildren)
                     try{
                         let subChildren = newChildren[0]?.children[0]?.children
-                        console.log(Array.from(subChildren))
                         Array.from(subChildren).forEach(subChild => {
                             if(subChild.children.length > 1){
                                 try{
@@ -113,7 +114,6 @@ if(document.querySelectorAll('.x-grid3-row-table') && document.querySelectorAll(
                                             obj = obj.replace(/new Date\((\d+)\)/g, '$1')
                                             obj = JSON.parse(obj)
                                             if(obj.rows.length === 0){
-                                                console.log(e)
                                                 if(document.querySelectorAll('#new-borderEl-select-framework') && document.querySelectorAll('#new-borderEl-select-framework').length > 0){
                                                     document.querySelectorAll('#new-borderEl-select-framework').forEach((element) => {
                                                         element.remove();
