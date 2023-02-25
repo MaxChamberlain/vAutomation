@@ -1,55 +1,18 @@
-chrome.runtime.onStartup.addListener(function() {
-    chrome.storage.local.clear()
+let relevantTabId
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    let url = tab.url
+    if(url.includes('vauto.com/Va/Appraisal/')) {
+        chrome.storage.local.set({relevantTabId: tab.id})
+        chrome.scripting.executeScript(tab.id, {file: 'contentscript.js'})
+    } else if (url.split('=').slice(0, -1).join('') === 'https://www.cargurus.com/Cars/instantMarketValueFromVIN.action?startUrl%2FCars%2FinstantMarketValueFromVIN.action&++++++++carDescription.vin%0D%0A'){
+        chrome.scripting.executeScript(tab.id, {file: 'cargurusscript.js'})
+    }
 })
 
-// listen for messages from the content script
-chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-    console.log(request, sender, sendResponse);
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        let currentTab = tabs[0].id;
-        if(request.type === 'grab') {
-            chrome.scripting.executeScript({
-                target: {tabId: currentTab},
-                files: ['content_script.js']
-            });
-        }
-        if(request.type === 'gathered-metrics-data') {
-            chrome.storage.local.set({wasWritten: true}, function() {
-            });
-            chrome.scripting.executeScript({
-                target: {tabId: currentTab},
-                files: ['undo_content_script.js']
-            });
-            chrome.storage.local.set({metrics: request.data}, function() {
-                console.log('Metrics data saved');
-            });
-        }
-        if(request.type === 'cancel-scrape') {
-            chrome.scripting.executeScript({
-                target: {tabId: currentTab},
-                files: ['undo_content_script.js']
-            });
-        }
-        if(request.type === 'put-data'){
-            console.log('putting data')
-            chrome.storage.local.get('metrics', (data) => {
-                if(data){
-                    console.log(data.metrics)
-                    chrome.scripting.executeScript({
-                        target: {tabId: currentTab},
-                        files: ['put_data_script.js']
-                    });
-                } else {
-                    console.log('No data')
-                }
-            })
-        }
-    });
-});
-
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-    chrome.scripting.executeScript({
-        target: {tabId: activeInfo.tabId},
-        files: ['undo_content_script.js']
-    });
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    chrome.storage.local.get('relevantTabId').then(e => console.log(e))
+    if(request.priceTarget) {
+        chrome.storage.local.get('relevantTabId').then(e => chrome.tabs.sendMessage(e.relevantTabId, {priceTarget: request.priceTarget}))
+    }
 })
