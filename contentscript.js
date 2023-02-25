@@ -49,7 +49,7 @@ try{
         margin-bottom: 10px;
     }
     .vautomation_input_container > label {
-        font-size: 1em;
+        font-size: 0.8em;
         font-weight: bold;
         margin-bottom: 5px;
         display: block;
@@ -74,13 +74,13 @@ try{
             </div>
             <div>
             <div class="vautomation_input_container">
-                <label for="OriginalSuggestedPrice">Original Suggested Price</label>
-                <input id="vautomation_OriginalSuggestedPrice" type="text" placeholder="Original Suggested Price" />
+                <label for="OriginalSuggestedPrice">Suggested Price</label>
+                <input id="vautomation_OriginalSuggestedPrice" type="number" placeholder="Original Suggested Price" />
             </div>
             <div class="vautomation_flex_container">
                 <div class="vautomation_input_container">
-                    <label for="carg_h">Cargurus</label>
-                    <input id="carg_h" type="text" placeholder="Cargurus Number" />
+                    <label for="carg_h">Cargurus Price</label>
+                    <input id="carg_h" type="number" placeholder="Cargurus Number" />
                 </div>
                 <div class="vautomation_input_container">
                     <label for="carg_level">Cargurus Level</label>
@@ -93,25 +93,25 @@ try{
                     </select>
                 </div>
             </div>
+            <a href="#" id="cargurus_link" style="margin-top: -10px; margin-bottom: 10px;">Open a CarGurus Instance</a>
             <div class="vautomation_flex_container">
                 <div class="vautomation_input_container">
                     <label for="MMR">MMR</label>
-                    <input id="vautomation_MMR" type="text" placeholder="MMR" />
+                    <input id="vautomation_MMR" type="number" placeholder="MMR" />
                 </div>
                 <div class="vautomation_input_container">
                     <label for="MSRP">MSRP</label>
-                    <input id="vautomation_MSRP" type="text" placeholder="MSRP" />
+                    <input id="vautomation_MSRP" type="number" placeholder="MSRP" />
                 </div>
             </div>
-
             <div class="vautomation_flex_container">
                 <div class="vautomation_input_container">
-                    <label for="OriginalSuggestedPercent">Original Suggested Percent</label>
-                    <input id="vautomation_OriginalSuggestedPercent" type="text" placeholder="Original Suggested Percent" />
+                    <label for="OriginalSuggestedPercent">Suggested Percent</label>
+                    <input id="vautomation_OriginalSuggestedPercent" type="number" placeholder="Original Suggested Percent" />
                 </div>
                 <div class="vautomation_input_container">
-                    <label for="OriginalSuggestedRadius">Original Suggested Radius</label>
-                    <input id="vautomation_OriginalSuggestedRadius" type="text" placeholder="Original Suggested Radius" />
+                    <label for="OriginalSuggestedRadius">Suggested Radius (Miles)</label>
+                    <input id="vautomation_OriginalSuggestedRadius" type="number" placeholder="Original Suggested Radius" />
                 </div>
             </div>
             <button id="vautomation_generate_set_button">Generate</button>
@@ -126,11 +126,9 @@ try{
     vautomation_generate_button.id = 'vautomation_generate_button'
     vautomation_generate_button.innerText = 'Generate'
     vautomation_generate_button.addEventListener('click', () => {
-        let vin = document.getElementById('Vin')?.value || ''
         let original_suggested_price = document.getElementById('AskingPriceField_Retail')?.value || ''
         let effective_percent_of_market = document.getElementById('EffectivePercentOfMarket_Retail')?.value || ''
         let effective_radius = document.getElementById('distanceCombo')?.value || ''
-        let odometer = document.getElementById('Odometer')?.value || ''
         let mmr
         document.querySelectorAll('.priceItems').forEach(e => {
             console.log(e.innerText)
@@ -150,9 +148,14 @@ try{
         
         input_element_vautomation.style.display = 'flex'
 
-        getCarGurus(vin, odometer)
 
     })
+    document.getElementById('cargurus_link').addEventListener('click', () => {
+        let vin = document.getElementById('Vin')?.value || ''
+        let odometer = document.getElementById('Odometer')?.value || ''
+        getCarGurus(vin, odometer)
+    })
+
 
     document.getElementById('vautomation_generate_set_button').addEventListener('click', () => {
         let string = document.getElementById('vautomation_OriginalSuggestedPrice')?.value || ''
