@@ -1,9 +1,13 @@
+
 if(window.location.href.includes('cargurus')){
+    let urlParams = new URLSearchParams(window.location.search);
+    let mileage = urlParams.get('odometer');
     let targetNode = document.getElementById('priceReport-thermometerPlaceholder');
-    
+    setTimeout(() => document.querySelector('input#mileage').value = mileage, 500)
+    setTimeout(() => document.querySelector('input#instantMarketToolForm_carDescription_price').value = 1, 500)
     // Options for the observer (which mutations to observe)
     const config = { childList: true };
-     
+    
     // Callback function to execute when mutations are observed
     const callback = function(mutationsList, observer) {
         for(let mutation of mutationsList) {

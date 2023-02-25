@@ -130,6 +130,7 @@ try{
         let original_suggested_price = document.getElementById('AskingPriceField_Retail')?.value || ''
         let effective_percent_of_market = document.getElementById('EffectivePercentOfMarket_Retail')?.value || ''
         let effective_radius = document.getElementById('distanceCombo')?.value || ''
+        let odometer = document.getElementById('Odometer')?.value || ''
         let mmr
         document.querySelectorAll('.priceItems').forEach(e => {
             console.log(e.innerText)
@@ -149,12 +150,33 @@ try{
         
         input_element_vautomation.style.display = 'flex'
 
-        getCarGurus(vin)
+        getCarGurus(vin, odometer)
 
     })
 
     document.getElementById('vautomation_generate_set_button').addEventListener('click', () => {
         let string = document.getElementById('vautomation_OriginalSuggestedPrice')?.value || ''
+        if(document.getElementById('carg_h')?.value && document.getElementById('carg_level')?.value) {
+            let level 
+            switch(document.getElementById('carg_level').value){
+                case 'greatPrice':
+                    level = 'GR'
+                    break
+                case 'goodPrice':
+                    level = 'G'
+                    break
+                case 'fairPrice':
+                    level = 'IMV'
+                    break
+                case 'highPrice':
+                    level = 'H'
+                    break
+                case 'overPrice':
+                    level = 'OP'
+                    break
+            }
+            if(level) string += ` ${level} ${document.getElementById('carg_h').value}`
+        }
         if(document.getElementById('vautomation_MMR')?.value) string += ` MMR ${document.getElementById('vautomation_MMR').value}`
         if(document.getElementById('vautomation_MSRP')?.value) string += ` MSRP ${document.getElementById('vautomation_MSRP').value}`
         if(document.getElementById('vautomation_OriginalSuggestedPercent')?.value) string += ` ${document.getElementById('vautomation_OriginalSuggestedPercent').value}%`
@@ -179,9 +201,9 @@ try{
     console.log(e)
 }
 
-function getCarGurus(vin, zip) {
+function getCarGurus(vin, odometer) {
     window.open(
-      `https://www.cargurus.com/Cars/instantMarketValueFromVIN.action?startUrl=%2FCars%2FinstantMarketValueFromVIN.action&++++++++carDescription.vin%0D%0A=${vin}`, 
+      `https://www.cargurus.com/Cars/instantMarketValueFromVIN.action?startUrl=%2FCars%2FinstantMarketValueFromVIN.action&++++++++carDescription.vin%0D%0A=${vin}&odometer=${odometer}`, 
       '', 
       'locked=yes'
     );
